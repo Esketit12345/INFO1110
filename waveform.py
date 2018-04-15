@@ -22,6 +22,4 @@ if len(sys.argv)==2:
         contents = f.read()
         newcontents = contents.replace('-','*').replace('/','*').replace('\\','*').replace('*1','-1').replace('*2','-2').replace('*3','-3')
         print(newcontents)
-        if FileNotFoundError:
-        print("Unknown source.")
-        exit()
+       
