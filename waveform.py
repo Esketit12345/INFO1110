@@ -35,8 +35,6 @@ if len(sys.argv)==2:
                 sys.exit()
 
 
-
-
 # creating an array which represents an initial wave for the given instrument:
 # geting rid of \t and store the position of any symbols but spaces
 def generate_initial_wave(content):
@@ -57,44 +55,32 @@ def generate_initial_wave(content):
 
 
 # method for drawing wave using given character as parameter
-def draw_wave(points, character, length):
+def draw_wave(points, size, character, length):
         array = [' '] * length
         for point in points:
             array[point[0]] = character
-        new_wave = ''.join(array)
-        print(new_wave)
+        if len(size) == 1:
+            size = size + " "
+        new_wave = size + '\t' + ''.join(array)
+def read_size(content):
+    size = []
+    for line in content:
+        chars = line.split()
+        size.append(chars[0])
+    return size
 
-# generating the wave: walking through score array looking for - and *
-# when it's * - wave goes as usual, but if it's - wave drops to x-axis and moves on x-axis until meets next *
-# after that it restarts from the beginning
-def generate_wave(score, line):
+def print_wave_line(point_groups, sizes):
     index = 0
-    instrument_wave_line = []
-    overflow = 0
-    for symbol in score[1]:
-        if index >= len(line):
-            index = 0
-            overflow = overflow + len(line)
-        if symbol == '*':
-            point_to_add = (line[index][0] + overflow, line[index][1])
-            instrument_wave_line.append(point_to_add)
-            index = index + 1
+    for size in sizes:
+        if index < len(point_groups):
+            draw_wave(point_groups[index], size, '*', wave_amount)
         else:
-            overflow = index + overflow
-            min_val = min(line[0][1],line[index][1])
-            max_val = max(line[0][1],line[index][1])
-            for new_y in range(min_val,max_val+1):
-                point_to_add = (overflow, new_y)
-                instrument_wave_line.append(point_to_add)
-            overflow = overflow + 1
-            index = 0
-    return instrument_wave_line
+            draw_wave([], size, '*', wave_amount)
+        index = index + 1
 
 wave = generate_initial_wave(instrument_line)
-
+read_size(instrument_line)
 generated_wave = generate_wave(instrument_score,wave)
 values = set(map(lambda i: i[1], generated_wave))
 groups = [[j for j in generated_wave if j[1] == i] for i in values]
-
-for points in groups:
-    draw_wave(points, '*', wave_amount)
+print_wave_line(groups, read_size(instrument_line))
